@@ -1,9 +1,11 @@
-package com.wind.helloworld;
+package com.wind.grpc;
 
+import com.grpc.service.helloworld.GreeterGrpc;
+import com.grpc.service.helloworld.HelloReply;
+import com.grpc.service.helloworld.HelloRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +19,7 @@ public class HelloWorldClient {
 
     private final ManagedChannel channel;
     private final GreeterGrpc.GreeterBlockingStub blockingStub;
+
 
     /** Construct client connecting to HelloWorld server at {@code host:port}. */
     public HelloWorldClient(String host, int port) {
@@ -34,7 +37,7 @@ public class HelloWorldClient {
     /** Say hello to server. */
     public void greet(String name) {
         logger.info("Will try to greet " + name + " ...");
-        HelloRequest request = HelloRequest.newBuilder().setName(name).build();
+        HelloRequest request = HelloRequest.newBuilder().setName(null).build();
         HelloReply response;
         try {
             response = blockingStub.sayHello(request);
@@ -50,7 +53,7 @@ public class HelloWorldClient {
      * greeting.
      */
     public static void main(String[] args) throws Exception {
-        HelloWorldClient client = new HelloWorldClient("localhost", 50051);
+        HelloWorldClient client = new HelloWorldClient("192.168.1.44", 50051);
         try {
 
             String user = "world";

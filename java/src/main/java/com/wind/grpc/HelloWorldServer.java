@@ -1,10 +1,16 @@
-package com.wind.helloworld;
+package com.wind.grpc;
 
+import com.grpc.service.helloworld.GreeterGrpc;
+import com.grpc.service.helloworld.HelloReply;
+import com.grpc.service.helloworld.HelloRequest;
+import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -21,11 +27,15 @@ public class HelloWorldServer {
     private int port = 50051;
     private Server server;
 
+    private static List<BindableService> serviceList = new ArrayList<>();
+
+
+
     private void start() throws IOException {
-        server = ServerBuilder.forPort(port)
-                .addService(new GreeterImpl())
-                .build()
-                .start();
+        ServerBuilder<?> builder = ServerBuilder.forPort(port);
+        serviceList.add(new GreeterImpl());
+        serviceList.forEach(service -> builder.addService(service));
+        server = builder.build().start();
         logger.info("Server started, listening on " + port);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             // Use stderr here since the logger may have been reset by its JVM shutdown hook.
